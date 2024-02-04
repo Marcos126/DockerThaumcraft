@@ -2,12 +2,13 @@
 services:
 #creating a minecraft server
   minecraft:
-    image: minecraft:latest
+    image: thaumcraft:latest
     tty: true
     stdin_open: true
-    container_name: minecraft
+    container_name: thaumcraft
 #setting the ports
     ports:
+      - "19565:19565"
       - "19890:19890"
 #setting the environment variables
     environment:
@@ -16,7 +17,45 @@ services:
       MAX:MEMORY: "6G"
 #creating a volume to store the mods, world, server.properties and logs
     volumes:
-      - ./MCDATA/1.12.2/Mods/:/Minecraft/mods
-      - ./MCDATA/1.12.2/Mundo/:/Minecraft/Thaumcraft
-      - ./MCDATA/1.12.2/config/server.properties:/Minecraft/server.properties
-      - ./MCDATA/1.12.2/logs/:/Minecraft/logs
+      - /MCDATA/1.12.2/mods:/Thaumcraft/mods
+      - /MCDATA/1.12.2/world:/Thaumcraft/Thaumcraft
+      - /MCDATA/1.12.2/config/server.properties:/Thaumcraft/server.properties
+      - /MCDATA/1.12.2/logs:/Thaumcraft/logs
+      - ./config/prometheus_exporter-server.toml:/Thaumcraft/config/prometheus_exporter-server.toml
+    restart: on-failure:3
+    networks:
+      minecraft:
+        aliases:
+          - thaumcraft
+
+  prometheus:
+    image: bitnami/prometheus
+    tty: true
+    stdin_open: true
+    ports:
+      - "9090:9090"
+    restart: on-failure:3
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+    container_name: prometheus
+    networks:
+      minecraft:
+       aliases:
+         - prometheus
+
+  grafana:
+    image: grafana/grafana
+    tty: true
+    stdin_open: true
+    ports:
+      - "3000:3000"
+    restart: on-failure:3
+    container_name: grafana
+    networks:
+      minecraft:
+        aliases:
+          - grafana
+
+networks:
+  minecraft:
+    name: minecraft
