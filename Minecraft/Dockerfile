@@ -1,35 +1,25 @@
-# Minecraft server dockerfile for ubuntu
 FROM ubuntu:latest
 
-#setting up the workdir
-WORKDIR /Minecraft
-LABEL name="Minecraft"
+# Crear un directorio para el servidor de Minecraft
+WORKDIR /Thaumcraft
 
-#setting up the environment variables 
-ARG DEBIAN_FRONTEND=noninteractive 
+# Instalar wget
+RUN apt update && apt install -y wget openjdk-8-jdk && apt clean 
 
-
-#installing java
-RUN apt update && apt install -y\
-    openjdk-17-jdk \
-    wget \
-    && apt clean    
-
-#setting eula to true
+# Aceptar el EULA
 RUN echo "eula=true" > eula.txt
 
-#downloading the server.jar
-RUN wget https://maven.minecraftforge.net/net/minecraftforge/forge/1.12.2-14.23.5.2860/forge-1.12.2-14.23.5.2860-installer.jar
+# Descargar e instalar Forge
 
-#exposing the port
-EXPOSE 28990
+RUN wget -O forge-installer.jar https://files.minecraftforge.net/maven/net/minecraftforge/forge/1.12.2-14.23.5.2855/forge-1.12.2-14.23.5.2855-installer.jar && \
+    java -jar forge-installer.jar --installServer && \
+    rm forge-installer.jar
+    
+# Exponer el puerto del servidor de Minecraft
+EXPOSE 19890
 
-#running the server
-RUN java -jar forge-1.12.2-14.23.5.2860-installer.jar --installServer
-
-RUN rm forge-1.12.2-14.23.5.2860-installer.jar
+# Iniciar el servidor de Minecraft con Forge
 
 ENTRYPOINT [ "java" ]
 
-CMD ["-jar","minecraft_server.1.12.2.jar","nogui"]
-
+CMD ["-Xmx1024M", "-Xms1024M", "-jar", "forge-1.12.2-14.23.5.2855.jar", "nogui"]

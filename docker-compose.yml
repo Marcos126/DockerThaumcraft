@@ -8,7 +8,7 @@ services:
     container_name: minecraft
 #setting the ports
     ports:
-      - "28990:28990"
+      - "19890:19890"
 #setting the environment variables
     environment:
       EULA: "TRUE"
@@ -16,25 +16,7 @@ services:
       MAX:MEMORY: "6G"
 #creating a volume to store the mods, world, server.properties and logs
     volumes:
-      - ./Mods/:/Minecraft/mods
-      - ./Mundo/:/Minecraft/Thaumcraft
-      - ./config/server.properties:/Minecraft/server.properties
-      - ./logs/:/Minecraft/logs
-    networks:
-         minecraft:
-            aliases:
-            - minecraft
-
-#creating a playit server
-  playit:
-    image: playit:latest
-    tty: true
-    stdin_open: true
-    container_name: playit
-    networks:
-        minecraft:
-          aliases:
-            - playit
-networks:
-  minecraft:
-    name: minecraft
+      - ./MCDATA/1.12.2/Mods/:/Minecraft/mods
+      - ./MCDATA/1.12.2/Mundo/:/Minecraft/Thaumcraft
+      - ./MCDATA/1.12.2/config/server.properties:/Minecraft/server.properties
+      - ./MCDATA/1.12.2/logs/:/Minecraft/logs
