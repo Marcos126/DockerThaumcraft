@@ -55,7 +55,16 @@ services:
       minecraft:
         aliases:
           - grafana
-
+  playit:
+    image: playit
+    tty: true
+    stdin_open: TRUE
+    container_name: playit
+    networks:
+      minecraft:
+        aliases:
+        - playit
+        
 networks:
   minecraft:
     name: minecraft
